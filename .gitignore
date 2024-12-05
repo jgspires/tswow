@@ -23,3 +23,5 @@ Thumbs.db
 
 # Logs
 /log.txt
+/.vs
+/package-lock.json
