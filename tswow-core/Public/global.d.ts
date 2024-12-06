@@ -4571,6 +4571,13 @@ declare class TSItem extends TSObject {
     ClearEnchantment(slot : EnchantmentSlot) : bool
 
     /**
+     * Sets the [Item]'s random property to the the given value.
+     * 
+     * @param propertyId : propertyID to set. Positive (>0) values point to random properties while negative values (<0) point to random suffixes.
+     */
+    SetRandomProperty(propertyId: int32): void
+
+    /**
      * Saves the [Item] to the database
      */
     SaveToDB() : void
