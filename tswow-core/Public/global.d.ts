@@ -4221,6 +4221,7 @@ declare class TSItem extends TSObject {
     IsNull() : bool
 
     UpdateItemSuffixFactor(): void
+    GetItemSuffixFactor(): uint32
     SetEnchantmentDuration(slot: EnchantmentSlot, duration: uint32): void
     SetEnchantmentCharges(slot: EnchantmentSlot, charges: uint32): void
     GetEnchantmentDuration(slot: EnchantmentSlot): TSNumber<uint32>

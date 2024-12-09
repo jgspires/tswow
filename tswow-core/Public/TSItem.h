@@ -82,6 +82,7 @@ public:
     void SetEnchantmentDuration(uint32 slot, uint32 duration);
     void SetEnchantmentCharges(uint32 slot, uint32 charges);
     void UpdateItemSuffixFactor();
+    TSNumber<uint32> GetItemSuffixFactor();
     TSNumber<uint32> GetEnchantmentDuration(uint32 slot);
     TSNumber<uint32> GetEnchantmentCharges(uint32 slot);
     void SetOwner(TSPlayer player);

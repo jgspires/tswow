@@ -693,6 +693,11 @@ void TSItem::UpdateItemSuffixFactor()
     item->UpdateItemSuffixFactor();
 }
 
+TSNumber<uint32> TSItem::GetItemSuffixFactor()
+{
+    return item->GetItemSuffixFactor();
+}
+
 void TSItem::SetEnchantmentDuration(uint32 slot, uint32 duration)
 {
     item->SetEnchantmentDuration(static_cast<EnchantmentSlot>(slot), duration, item->GetOwner());
