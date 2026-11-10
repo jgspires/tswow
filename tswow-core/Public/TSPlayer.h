@@ -91,6 +91,8 @@ public:
 	bool InBG();
 	bool CanBlock();
 	bool CanParry();
+	bool IsInHostileArea();
+	bool IsInNoPvPArea();    
 	TSNumber<uint8> GetSpecsCount(uint32 entry, uint32 mapid, uint32 zone);
 	TSNumber<uint32> GetActiveSpec();
 	TSNumber<uint32> GetPhaseMaskForSpawn();
@@ -332,6 +334,7 @@ public:
 	void SendCinematicStart(uint32 CinematicSequenceId);
 	void SendMovieStart(uint32 MovieId);
 	void SendMail(uint8 senderType, uint64 from, std::string const& subject, std::string const& body, uint32 money = 0, uint32 cod = 0, uint32 delay = 0, TSArray<TSItem> items = TSArray<TSItem>(), TSArray<TSItemEntry> itemEntries = TSArray<TSItemEntry>());
+	void SendGMMail(std::string const& subject, std::string const& body, TSArray<TSItem> items = TSArray<TSItem>(), TSArray<TSItemEntry> itemEntries = TSArray<TSItemEntry>());
 	bool CanBeTank();
 	bool CanBeHealer();
 	bool CanBeDPS();
@@ -360,6 +363,12 @@ public:
 	void RemoveMail(uint32 id);
 
 	TSOutfit GetOutfitCopy(uint32_t settings = Outfit::EVERYTHING, int32_t race = -1, int32_t gender = -1);
+
+	void SetBaseRune(uint8 index, uint8 runeType);
+	void RestoreBaseRune(uint8 index);
+	void ConvertRune(uint8 index, uint8 runeType);
+	void SetRuneCooldown(uint8 index, uint32 cooldown, bool casted);
+	void ResyncRunes();
 
 private:
 		TSLua::Dictionary<TSNumber<uint32>, TSPlayerSpell> LGetSpellMap();

@@ -19,6 +19,7 @@ import { BuildArgs, EmulatorCore } from "../data/Settings";
 import { DBC as _DBC, DBCLoader } from "./DBCFiles";
 import { LUAXML as _LUAXML } from "./luaxml/LUAXML";
 import { SQL as _SQL } from "./SQLFiles";
+import { AccessRequirement, AccessRequirementRegistry } from "./std/AccessRequirement/AccessRequirement";
 import { AchievementRegistry } from "./std/Achievement/Achievement";
 import { AchievementCategoryRegistry } from "./std/Achievement/AchievementCategory";
 import { AreaRegistry } from "./std/Area/Area";
@@ -81,6 +82,7 @@ import { SoundAmbienceRegistry } from "./std/Sound/SoundAmbience";
 import { SoundEntryRegistry } from "./std/Sound/SoundEntry";
 import { ZoneIntroMusicRegistry } from "./std/Sound/ZoneIntroMusic";
 import { ZoneMusicRegistry } from "./std/Sound/ZoneMusic";
+import { CreatureSound } from "./std/Sound/CreatureSound";
 import { SpawnGroupRegistry } from "./std/SpawnGroup/SpawnGroupRegistry";
 import { SpellMissileRegistry } from "./std/Spell/SpellMissile";
 import { SpellRuneCostRegistry } from "./std/Spell/SpellPower";
@@ -122,6 +124,7 @@ export const std = {
     Languages : LanguageRegistry,
     Quests : QuestRegistry,
     Titles: TitleRegistry,
+    AccessRequirement: AccessRequirementRegistry,
     Achievements: AchievementRegistry,
     Loot: Loot,
     Items: ItemTemplateRegistry,
@@ -167,6 +170,7 @@ export const std = {
     SoundAmbience: SoundAmbienceRegistry,
     ZoneMusic: ZoneMusicRegistry,
     ZoneIntroMusic: ZoneIntroMusicRegistry,
+    CreatureSound: CreatureSound,
     MailTemplates: MailTemplateRegistry,
     Compare: Compare,
     SkillTiers: SkillTiersRegistry,

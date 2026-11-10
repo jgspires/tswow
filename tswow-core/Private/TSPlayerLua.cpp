@@ -75,6 +75,8 @@ void TSLua::load_player_methods(sol::state& state)
     LUA_FIELD(ts_player, TSPlayer, InBG);
     LUA_FIELD(ts_player, TSPlayer, CanBlock);
     LUA_FIELD(ts_player, TSPlayer, CanParry);
+    LUA_FIELD(ts_player, TSPlayer, IsInHostileArea);
+    LUA_FIELD(ts_player, TSPlayer, IsInNoPvPArea);
     LUA_FIELD(ts_player, TSPlayer, GetSpecsCount);
     LUA_FIELD(ts_player, TSPlayer, GetActiveSpec);
     LUA_FIELD(ts_player, TSPlayer, GetPhaseMaskForSpawn);
@@ -301,6 +303,12 @@ void TSLua::load_player_methods(sol::state& state)
     LUA_FIELD_OVERLOAD_3_8(ts_player, TSPlayer, GossipSendTextMenuGendered, TSObject, std::string const&, std::string const&, uint32, uint32, uint32, uint32, uint32, uint32, uint32, uint32);
     LUA_FIELD(ts_player, TSPlayer, GossipSendPOI);
     LUA_FIELD_OVERLOAD_RET_0_3(ts_player, TSPlayer, GetOutfitCopy, uint32_t, int32_t, int32_t);
+    LUA_FIELD(ts_player, TSPlayer, HasRunes);
+    LUA_FIELD(ts_player, TSPlayer, SetBaseRune);
+    LUA_FIELD(ts_player, TSPlayer, RestoreBaseRune);
+    LUA_FIELD(ts_player, TSPlayer, ConvertRune);
+    LUA_FIELD(ts_player, TSPlayer, SetRuneCooldown);
+    LUA_FIELD(ts_player, TSPlayer, ResyncRunes);
     ts_player.set_function("GetSpellMap", &TSPlayer::LGetSpellMap);
 
     ts_player.set_function("EquipItem", sol::overload(
@@ -330,4 +338,5 @@ void TSLua::load_player_methods(sol::state& state)
             return player.SendMail(senderType,from,subject,body);
         }
     ));
+
 }

@@ -671,6 +671,16 @@ bool TSPlayer::CanParry()
     return player->CanParry();
 }
 
+bool TSPlayer::IsInHostileArea()
+{
+    return player->pvpInfo.IsInHostileArea;
+}
+
+bool TSPlayer::IsInNoPvPArea()
+{
+    return player->pvpInfo.IsInNoPvPArea;
+}
+
 /*int TSPlayer::HasReceivedQuestReward(lua_State* L, Player* player)
 {
     return player->IsQuestRewarded(entry);
@@ -3796,6 +3806,28 @@ void TSPlayer::SendMail(uint8 senderType, uint64 from, std::string const& subjec
     CharacterDatabase.CommitTransaction(trans);
 }
 
+void TSPlayer::SendGMMail(std::string const& subject, std::string const& body, TSArray<TSItem> items, TSArray<TSItemEntry> itemEntries) {
+    MailSender sender(MAIL_NORMAL, 0, MAIL_STATIONERY_GM);
+    MailDraft draft(subject,body);
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
+
+    for(int i=0;i<items.get_length();++i)
+    {
+        auto item = items.get(i);
+        item->item->SaveToDB(trans);
+        draft.AddItem(item.item);
+    }
+
+    for(int i=0;i<itemEntries.get_length();++i)
+    {
+        auto item = Item::CreateItem(itemEntries[i].GetEntry(),itemEntries[i].GetCount(),nullptr);
+        item->SaveToDB(trans);
+        draft.AddItem(item);
+    }
+    draft.SendMailTo(trans,MailReceiver(player,player->GetGUID().GetCounter()),sender);
+    CharacterDatabase.CommitTransaction(trans);
+}
+
 TSArray<TSMail> TSPlayer::GetMails()
 {
     TSArray<TSMail> arr;
@@ -4150,4 +4182,31 @@ void TSPlayer::LSendShowMailBox0(TSGUID guid)
 void TSPlayer::LSendShowMailBox1(TSNumber<uint32> guid)
 {
     return SendShowMailBox(guid);
+}
+
+void TSPlayer::SetBaseRune(uint8 index, uint8 runeType)
+{
+    RuneType tcRuneType = static_cast<RuneType>(runeType);
+    player->SetBaseRune(index, tcRuneType);
+}
+
+void TSPlayer::RestoreBaseRune(uint8 index)
+{
+    player->RestoreBaseRune(index);
+}
+
+void TSPlayer::ConvertRune(uint8 index, uint8 runeType)
+{
+    RuneType tcRuneType = static_cast<RuneType>(runeType);
+    player->ConvertRune(index, tcRuneType);
+}
+
+void TSPlayer::SetRuneCooldown(uint8 index, uint32 cooldown, bool casted)
+{
+    player->SetRuneCooldown(index, cooldown, casted);
+}
+
+void TSPlayer::ResyncRunes()
+{
+    player->ResyncRunes();
 }

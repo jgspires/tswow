@@ -390,6 +390,20 @@ declare interface TSPlayer extends TSUnit, TSDBJsonProvider {
      * @param items
      */
 	SendMail(senderType: uint8, from: uint64, subject: string, body: string, money? : uint32, cod? : uint32, delay? : uint32, items? : TSArray<TSItem>, itemEntries? : TSArray<TSItemEntry>);
+    
+    /**
+     * Sends a GM mail with items to this player
+     * 
+     * This function creates mail from a GM/administrative sender and handles
+     * the special sender object creation required for GM mail with items.
+     * Similar to SendMail but for administrative purposes.
+     * 
+     * @param subject The subject line of the mail
+     * @param body The main body text of the mail message
+     * @param items Optional array of TSItem objects to attach to the mail
+     * @param itemEntries Optional array of TSItemEntry objects to create and attach as items
+     */
+    SendGMMail(subject: string, body: string, items?: TSArray<TSItem>, itemEntries?: TSArray<TSItemEntry>);
 
     /**
      * Returns 'true' if the [Player] can Titan Grip, 'false' otherwise.
@@ -726,6 +740,20 @@ declare interface TSPlayer extends TSUnit, TSDBJsonProvider {
      * @return bool canParry
      */
     CanParry() : bool
+
+    /**
+     * Returns 'true' if the [Player] is in a contested or hostile zone, 'false' otherwise.
+     *
+     * @return bool isInHostileArea
+     */
+    IsInHostileArea() : bool
+
+    /**
+     * Returns 'true' if the [Player] is in a no-pvp area such as as sanctuary, 'false' otherwise.
+     *
+     * @return bool isInHostileArea
+     */
+    IsInNoPvPArea() : bool
 
     /**
      * Returns the amount of available specs the [Player] currently has
@@ -2262,6 +2290,13 @@ declare interface TSPlayer extends TSUnit, TSDBJsonProvider {
 
     GetFace(): TSNumber<uint8>;
     SetFace(face: uint8);
+
+    SetBaseRune(index: uint8, runeType: uint8): void;
+    RestoreBaseRune(index: uint8): void;
+    ConvertRune(index: uint8, runeType: uint8): void;
+    SetRuneCooldown(index: uint8, cooldown: uint32, casted: bool): void;
+    ResyncRunes(): void;
+
 }
 
 declare interface TSCorpse extends TSWorldObject {
@@ -4901,6 +4936,13 @@ declare interface TSGameObject extends TSWorldObject {
     GetDisplayID() : TSNumber<uint32>
 
     /**
+     * Returns the [GameObject]'s owner's GUID.
+     *
+     * @return uint64 ownerGUID
+     */
+    GetOwnerGUID() : TSGUID
+
+    /**
      * Returns the state of a [GameObject]
      * Below are client side [GOState]s off of 3.3.5a
      *
@@ -5723,6 +5765,8 @@ declare interface TSWorldObject extends TSObject, TSWorldEntityProvider<TSWorldO
     GetCreature(guid: TSNumber<uint32> | TSGUID): TSCreature | undefined
     GetPlayer(guid: TSNumber<uint32> | TSGUID): TSPlayer | undefined
     GetFactionTemplate(): TSFactionTemplate
+    GetMapHeight(x: TSNumber<float>, y: TSNumber<float>, z: TSNumber<float>): TSNumber<float>
+    GetFloorZ(): TSNumber<float>;
 }
 
 declare interface TSWorldObjectCollection {
@@ -7458,6 +7502,44 @@ declare interface TSUnit extends TSWorldObject {
      */
     AddThreat(victim : TSUnit,threat : float,spell? : uint32,schoolMask? : SpellSchoolMask | uint32, ignoreModifiers?: boolean, ignoreRedirects?: boolean, raw?: boolean) : void
     ScaleThreat(victim: TSUnit, scale: float, raw?: boolean)
+
+    /**
+    * Checks if the [Unit] has the specified [MovementFlags] set.
+    *
+    *     enum MovementFlags
+    *     {
+    *         MOVEFLAG_NONE               = 0x00000000,
+    *         MOVEFLAG_FORWARD            = 0x00000001,
+    *         MOVEFLAG_BACKWARD           = 0x00000002,
+    *         MOVEFLAG_STRAFE_LEFT        = 0x00000004,
+    *         MOVEFLAG_STRAFE_RIGHT       = 0x00000008,
+    *         MOVEFLAG_TURN_LEFT          = 0x00000010,
+    *         MOVEFLAG_TURN_RIGHT         = 0x00000020,
+    *         MOVEFLAG_PITCH_UP           = 0x00000040,
+    *         MOVEFLAG_PITCH_DOWN         = 0x00000080,
+    *         MOVEFLAG_WALK_MODE          = 0x00000100,
+    *         MOVEFLAG_LEVITATING         = 0x00000400,
+    *         MOVEFLAG_FLYING             = 0x00000800,
+    *         MOVEFLAG_FALLING            = 0x00002000,
+    *         MOVEFLAG_FALLINGFAR         = 0x00004000,
+    *         MOVEFLAG_SWIMMING           = 0x00200000,
+    *         MOVEFLAG_SPLINE_ENABLED     = 0x00400000,
+    *         MOVEFLAG_CAN_FLY            = 0x00800000,
+    *         MOVEFLAG_FLYING_OLD         = 0x01000000,
+    *         MOVEFLAG_ONTRANSPORT        = 0x02000000,
+    *         MOVEFLAG_SPLINE_ELEVATION   = 0x04000000,
+    *         MOVEFLAG_ROOT               = 0x08000000,
+    *         MOVEFLAG_WATERWALKING       = 0x10000000,
+    *         MOVEFLAG_SAFE_FALL          = 0x20000000,
+    *         MOVEFLAG_HOVER              = 0x40000000,
+    *
+    *         MOVEFLAG_MASK_MOVING_FORWARD = MOVEFLAG_FORWARD | MOVEFLAG_STRAFE_LEFT | MOVEFLAG_STRAFE_RIGHT | MOVEFLAG_FALLING,
+    *     }
+    *
+    * @param uint32 flag The movement flag(s) to check (bitmask)
+    * @return bool True if any of the specified flags are set on the unit
+    */
+    HasUnitMovementFlag(flag: uint32) : bool
 }
 
 declare interface TSItemTemplate extends TSEntityProvider {
@@ -7661,6 +7743,7 @@ declare interface TSItemTemplate extends TSEntityProvider {
 
 declare interface TSSpellInfo extends TSEntityProvider {
 	IsNull() : bool
+    GetName(locale: uint32) : string
     GetEntry() : TSNumber<uint32>
 	GetSchool() : TSNumber<uint32>
 	GetBaseLevel() : TSNumber<uint32>
@@ -7728,6 +7811,12 @@ declare interface TSSpellInfo extends TSEntityProvider {
     GetEffect(index: SpellEffIndex): TSSpellEffectInfo
     GetTotem(index: uint32): TSNumber<uint32>
     GetTalentCost(): TSNumber<uint32>
+    IsRanked(): boolean
+    GetRank(): uint8
+    GetFirstRankSpell(): TSSpellInfo
+    GetLastRankSpell(): TSSpellInfo
+    GetNextRankSpell(): TSSpellInfo
+    GetPrevRankSpell(): TSSpellInfo
 }
 
 declare class TSSpellEffectInfo {

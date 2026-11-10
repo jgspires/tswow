@@ -64,6 +64,7 @@ public:
     bool operator==(TSSpellInfo const& rhs) { return info == rhs.info; }
     bool IsNull() { return info == nullptr; }
 
+    std::string GetName(uint32 locale);
     TSNumber<uint32> GetEntry();
     TSNumber<uint32> GetSchool();
     TSNumber<uint32> GetBaseLevel();
@@ -132,6 +133,12 @@ public:
     TSNumber<uint32> GetTalentCost();
     TSSpellEffectInfo GetEffect(uint32 index);
     TSEntity * GetData();
+    bool IsRanked();
+    uint8 GetRank();
+    TSSpellInfo GetFirstRankSpell();
+    TSSpellInfo GetLastRankSpell();
+    TSSpellInfo GetNextRankSpell();
+    TSSpellInfo GetPrevRankSpell();
 };
 
 TC_GAME_API TSSpellInfo GetSpellInfo(uint32 entry);
