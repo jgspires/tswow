@@ -31,6 +31,42 @@ import { NodeConfig } from './NodeConfig';
 
 export const CLEAN_CLIENT_MD5 = '45892bdedd0ad70aed4ccd22d9fb5984'
 
+// TSWoW's long-standing cut point for a clean 3.3.5a Wow.exe.
+// No section data lies past it in the clean file, only trailing data.
+const CLEAN_CLIENT_SECTIONS_END = 0x758c00
+
+/**
+ * Returns the file offset just past the raw data of the exe's last
+ * section, read from the PE section table, or 0 if the buffer does
+ * not look like a PE file.
+ *
+ * Other patchers (such as St0ny's AIO patcher) can append new code
+ * sections to the end of the file, so this can be larger than
+ * CLEAN_CLIENT_SECTIONS_END.
+ */
+function peSectionsEnd(exe: Buffer): number {
+    try {
+        const peHeader = exe.readUInt32LE(0x3C)
+        if (exe.readUInt32LE(peHeader) !== 0x00004550) { // "PE\0\0"
+            return 0
+        }
+        const sectionCount = exe.readUInt16LE(peHeader + 6)
+        const optionalHeaderSize = exe.readUInt16LE(peHeader + 20)
+        const sectionTable = peHeader + 24 + optionalHeaderSize
+        let end = 0
+        for (let i = 0; i < sectionCount; ++i) {
+            const section = sectionTable + i * 40
+            const rawSize = exe.readUInt32LE(section + 16)
+            const rawPointer = exe.readUInt32LE(section + 20)
+            end = Math.max(end, rawPointer + rawSize)
+        }
+        return end
+    } catch (err) {
+        // header offsets point outside the buffer
+        return 0
+    }
+}
+
 const processMap: {[datasetName: string]: Process[]} = {}
 
 export class Client {
@@ -226,7 +262,21 @@ export class Client {
                     + ` dll at ${ipaths.bin.ClientExtensions_dll.get()}`
                 )
             }
-            wowbin = wowbin.slice(0,0x758c00)
+            // Drop the trailing data after the last section, but never
+            // cut into sections that another patcher appended
+            // (e.g. St0ny's "hold action buttons to repeat" adds .hrep).
+            const sectionsEnd = Math.max(
+                  CLEAN_CLIENT_SECTIONS_END
+                , peSectionsEnd(wowbin)
+            )
+            if(sectionsEnd > CLEAN_CLIENT_SECTIONS_END) {
+                term.log('client',
+                      `Source Wow.exe has sections appended past`
+                    + ` 0x${CLEAN_CLIENT_SECTIONS_END.toString(16)},`
+                    + ` keeping them (file cut at 0x${sectionsEnd.toString(16)})`
+                )
+            }
+            wowbin = wowbin.slice(0,sectionsEnd)
             ipaths.bin.ClientExtensions_dll
                 .copy(this.path.ClientExtensions_dll)
         }
