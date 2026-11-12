@@ -470,6 +470,12 @@ struct TSEvents
             , TSSpell
             , TSMutable<bool,bool> isLocked
         )
+        ID_EVENT(OnCreateItem
+            , TSSpell
+            , TSPlayer player
+            , TSMutableNumber<uint32> itemId
+            , TSMutableNumber<uint32> count
+        )
         ID_EVENT(OnHit, TSSpell)
         ID_EVENT(OnTick, TSAuraEffect)
         ID_EVENT(OnRemove, TSAuraEffect, TSAuraApplication, TSNumber<uint32>)

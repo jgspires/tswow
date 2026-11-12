@@ -8281,6 +8281,29 @@ declare namespace _hidden {
             , locked: TSMutable<boolean,boolean>
         ) => void)
 
+        /**
+         * Fires when a spell is about to create an item for a player (SPELL_EFFECT_CREATE_ITEM and
+         * SPELL_EFFECT_CREATE_ITEM_2: crafting, conjuring, some quest and item spells). Runs after the
+         * profession "perfect item" and "extra items" rolls, before the item is stored, so changing
+         * `itemId` creates a different item with everything else unchanged: bag checks, "Made by",
+         * the "You create" message and the craft skill-up.
+         *
+         * @param itemId the item entry that will be created. Must be a valid item template.
+         * @param count how many will be created (already including extra items from specialisations).
+         */
+        OnCreateItem(callback: (
+              spell: TSSpell
+            , player: TSPlayer
+            , itemId: TSMutableNumber<uint32>
+            , count: TSMutableNumber<uint32>
+        ) => void): T;
+        OnCreateItem(id: EventID, callback: (
+              spell: TSSpell
+            , player: TSPlayer
+            , itemId: TSMutableNumber<uint32>
+            , count: TSMutableNumber<uint32>
+        ) => void): T;
+
         OnHit(callback: (spell: TSSpell)=>void): T;
         OnHit(id: EventID, callback: (spell: TSSpell)=>void): T;
 
