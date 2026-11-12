@@ -33,7 +33,7 @@ const livescript_example =
 const scripts_tsconfig_json =
 {
     "compilerOptions": {
-      "target": "es5",
+      "target": "es2016", // changed from es5
       "module": "commonjs",
       "outDir": "./build",
       "rootDir": "../",
@@ -49,7 +49,7 @@ const scripts_tsconfig_json =
 
 const temp_config = (dataset: Dataset) => ({
     'compilerOptions': {
-    'target': 'es5',
+    "target": "es2016", // changed from es5
     'module': 'commonjs',
     'outDir': `./livescripts/build/${dataset.fullName}/cpp`,
     'rootDir': './livescripts',
@@ -92,7 +92,7 @@ export class LiveScriptsConfig extends ConfigFile {
 
 const lua_tsconfig_json = {
     "compilerOptions": {
-      "target": "es5",
+      "target": "es2016", // changed from es5
       "module": "commonjs",
       "strict": true,
       "esModuleInterop": true,
